@@ -1,0 +1,195 @@
+{
+  "Uuid": "8ee0025b-01fa-4bd6-b915-f4e3769f1d71",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "02_ЛИСТ_СоздатьНабор",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [
+    {
+      "Id": "e019a72a7b3a4364b9a3fc6a1c7b55b9",
+      "Name": "Reset",
+      "Type": "boolean",
+      "Value": "true",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "Id": "4e7c6402cf7545f4ad6d7685e8b09043",
+      "Name": "Имя набора",
+      "Type": "string",
+      "Value": "BimTeam",
+      "Description": "Создание строки."
+    }
+  ],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\nfrom System.Collections.Generic import *\r\n\r\n# Import RevitAPI\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import *\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\nname = IN[1]\r\n\r\ndef save_vss(vss,  name):\r\n    if \"_copy\" in name:\r\n        revision = int(name.split(\"_copy\")[-1])\r\n    else:\r\n        revision = 0\r\n    try:\r\n        vss.SaveAs(name)\r\n        if revision != 0:\r\n            TaskDialog.Show(\"Ошибка имени\", \"Имя набора уже существует. Будет задано имя <%s> \"%name)\r\n        else:\r\n            TaskDialog.Show(\"Успешное выполнение\", \"Создано набор видов с именем <%s>\"%name)\r\n    except Exception:\r\n        if revision == 0:\r\n            revision += 1\r\n            newname = name + \"_copy\" + str(revision)\r\n            save_vss(vss, newname)\r\n        else:\r\n            revision += 1\r\n            newname = name.split(\"_copy\")[0] + \"_copy\" + str(revision)\r\n            save_vss(vss, newname)\r\n\r\nIds = uidoc.Selection.GetElementIds()\r\nelems = []\r\nfor i in Ids:\r\n    elems.append(doc.GetElement(i))\r\n\r\n\r\npm = doc.PrintManager\r\nif pm.PrintRange != PrintRange.Select:\r\n    pm.PrintRange = PrintRange.Select\r\n\r\nvss = pm.ViewSheetSetting\r\nviewSet = ViewSet()\r\n\r\nfor sh in elems:\r\n    if sh.CanBePrinted:\r\n        viewSet.Insert(sh)\r\n\r\nvss.CurrentViewSheetSet.Views = viewSet\r\n#view_sheet_settingS = FilteredElementCollector(doc).OfClass(ViewSheet)\r\n\r\nerr = []\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nsave_vss(vss, name)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n\r\nOUT = \"done\"\r\n\r\n",
+      "VariableInputPorts": true,
+      "Id": "d623c7e7959d4e99b90cf9311a80bbbb",
+      "Inputs": [
+        {
+          "Id": "ed5450a2ec9f4f65bfe9e9551d57a976",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f1698bc51ae84527a39c0f2c35f5a7ef",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3fa70a302ea840fc9e288e5159d17e49",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": true,
+      "Id": "e019a72a7b3a4364b9a3fc6a1c7b55b9",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6b2c1f27c7344009a54998aa573d7f46",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "BimTeam",
+      "Id": "4e7c6402cf7545f4ad6d7685e8b09043",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4e7af5946cde492397a8ee4cb1c6da9b",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Создание строки."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "6b2c1f27c7344009a54998aa573d7f46",
+      "End": "ed5450a2ec9f4f65bfe9e9551d57a976",
+      "Id": "0f9409bbe9964350b85f95cfd91f0871"
+    },
+    {
+      "Start": "4e7af5946cde492397a8ee4cb1c6da9b",
+      "End": "f1698bc51ae84527a39c0f2c35f5a7ef",
+      "Id": "983d377ec9f34192a301432a34067c70"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.2.6826",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "d623c7e7959d4e99b90cf9311a80bbbb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 581.43553700127029,
+        "Y": -36.249168691999245
+      },
+      {
+        "Id": "e019a72a7b3a4364b9a3fc6a1c7b55b9",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Name": "Reset",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 439.98051576920778,
+        "Y": -41.1178873705245
+      },
+      {
+        "Id": "4e7c6402cf7545f4ad6d7685e8b09043",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Name": "Имя набора",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 471.60994473547061,
+        "Y": 23.22067272295692
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "e866cbf3a8014ababe463167208d2602",
+        "Title": "Инструкция:\r\nВыбрать в диспетчере проекта листы/виды для добавления в набор. Указать имя набора в ноде \"Имя набора\". Запустить скрипт.\r\nВ результате работы листа создастся набор листов с задаными видами. Если такое имя набора листов уже существует, то будет добавлен суффикс \"copy#\", где # - номер копии.\r\nДля перезапуска скрипта - следует либо изменить имя набора, либо переключить переключатель Reset",
+        "Nodes": [],
+        "Left": 433.440342068301,
+        "Top": -241.23188858103254,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": -908.31316822741894,
+    "Y": 246.79706846382055,
+    "Zoom": 2.3837484973875345
+  }
+}

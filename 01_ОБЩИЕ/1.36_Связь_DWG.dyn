@@ -1,0 +1,78 @@
+<Workspace Version="1.3.2.2480" X="1261.4958263097" Y="635.818644071874" zoom="0.320896551083593" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="False">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Autodesk.Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Autodesk.DesignScript.Geometry.Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <CoreNodeModels.Input.DirectoryObject guid="68390206-09db-420d-9118-05ca0223cc8e" type="CoreNodeModels.Input.DirectoryObject" nickname="Directory.FromPath" x="-3203.60979529574" y="-582.277782732937" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Input.DirectoryObject>
+    <CoreNodeModels.Input.Directory guid="e229b194-ce0a-433f-b625-79650163e43b" type="CoreNodeModels.Input.Directory" nickname="DWG Directory Path" x="-3502.80594870515" y="-581.544795249861" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>C:\Users\kakoulin.ae\Downloads\DWG</System.String>
+      <HintPath>C:\Users\kakoulin.ae\Downloads\DWG</HintPath>
+    </CoreNodeModels.Input.Directory>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="959d46cb-5b57-419a-b2fc-92a3933a2e2a" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Directory.Contents" x="-3022.60362177759" y="-581.902428326766" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.IO.Directory.Contents@var,string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="True" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <CoreNodeModels.Input.StringInput guid="269f7f4a-d601-48ea-a01b-a1b4059d31fd" type="CoreNodeModels.Input.StringInput" nickname="String" x="-3103.02203288487" y="-486.200847651409" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>*.dwg</System.String>
+      <System.String value="*.dwg" />
+    </CoreNodeModels.Input.StringInput>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="dccbea54-677a-4a31-b1a9-9c6fd7cd0591" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-2189.37805322485" y="-115.970138109288" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="false;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="40a466a9-7d43-4a44-ab1c-3c208cee283a" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="FilePath.FileName" x="-2023.90225449687" y="-147.031073091589" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.IO.FilePath.FileName@string,bool">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="True" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <CoreNodeModels.Watch guid="7e109cbe-ad31-45da-95c7-7394f06dbc13" type="CoreNodeModels.Watch" nickname="Watch" x="-2701.77211728339" y="-582.129264602474" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <CoreNodeModels.Watch guid="a3e8fc53-32df-4fd7-ad48-8aa87552872c" type="CoreNodeModels.Watch" nickname="DWGs to be Linked" x="-1723.94988536366" y="-307.7365721309" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="d7aa5c2b-bf0d-4c5e-b086-3edbf0f6cd94" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="DraftingView.ByName" x="-1726.79648061003" y="-147.116879452438" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Views.DraftingView.ByName@string">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="b00d5609-916c-4037-b034-6be766dd078e" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-2185.69545003742" y="-1522.244394452" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;# Link DWGs&#xA;import clr&#xA;clr.AddReference('ProtoGeometry')&#xA;from Autodesk.DesignScript.Geometry import *&#xA;# 5&#xA;# Import DocumentManager and TransactionManager&#xA;clr.AddReference('RevitServices')&#xA;import RevitServices&#xA;from RevitServices.Persistence import DocumentManager&#xA;from RevitServices.Transactions import TransactionManager&#xA;#11&#xA;doc = DocumentManager.Instance.CurrentDBDocument&#xA;uiapp = DocumentManager.Instance.CurrentUIApplication&#xA;app = uiapp.Application&#xA;#15&#xA;# Import RevitAPI&#xA;clr.AddReference('RevitAPI')&#xA;import Autodesk&#xA;from Autodesk.Revit.DB import *&#xA;#20&#xA;#The inputs to this node will be stored as a list in the IN variables.&#xA;dataEnteringNode = IN&#xA;&#xA;filePaths = IN[0]&#xA;views = UnwrapElement(IN[1])&#xA;viewsplaced=list()&#xA;#27&#xA;options = DWGImportOptions()&#xA;options.AutoCorrectAlmostVHLines = True&#xA;# ВКЛ/ВЫКЛ ЧБ ЦВЕТА&#xA;#options.ColorMode = ImportColorMode.BlackAndWhite&#xA;options.OrientToView = True&#xA;options.ThisViewOnly = True&#xA;options.VisibleLayersOnly = True&#xA;options.CustomScale = 100&#xA;options.Unit = ImportUnit.Default&#xA;options.Placement= ImportPlacement.Centered&#xA;options.Unit = ImportUnit.Default&#xA;options.Placement= ImportPlacement.Centered&#xA;#options.Placement = Origin&#xA;#38&#xA;LinkedElem = clr.Reference[ElementId]()&#xA;&#xA;for view in range(len(views)):&#xA;	TransactionManager.Instance.EnsureInTransaction(doc)&#xA;	doc.Link(filePaths[view], options, views[view])&#xA;	TransactionManager.Instance.TransactionTaskDone()&#xA;	viewsplaced.append(views[view])&#xA;#46&#xA;&#xA;#Assign your output to the OUT variable.&#xA;OUT = viewsplaced;&#xA;&quot;;" ShouldFocus="false" />
+    <PythonNodeModels.PythonStringNode guid="4fb54b13-1257-448f-b97b-e7e43d914a88" type="PythonNodeModels.PythonStringNode" nickname="Python Script From String" x="-1310.87599439639" y="-552.003609302211" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </PythonNodeModels.PythonStringNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="68390206-09db-420d-9118-05ca0223cc8e" start_index="0" end="959d46cb-5b57-419a-b2fc-92a3933a2e2a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e229b194-ce0a-433f-b625-79650163e43b" start_index="0" end="68390206-09db-420d-9118-05ca0223cc8e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="959d46cb-5b57-419a-b2fc-92a3933a2e2a" start_index="0" end="7e109cbe-ad31-45da-95c7-7394f06dbc13" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="269f7f4a-d601-48ea-a01b-a1b4059d31fd" start_index="0" end="959d46cb-5b57-419a-b2fc-92a3933a2e2a" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="dccbea54-677a-4a31-b1a9-9c6fd7cd0591" start_index="0" end="40a466a9-7d43-4a44-ab1c-3c208cee283a" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="40a466a9-7d43-4a44-ab1c-3c208cee283a" start_index="0" end="d7aa5c2b-bf0d-4c5e-b086-3edbf0f6cd94" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="40a466a9-7d43-4a44-ab1c-3c208cee283a" start_index="0" end="a3e8fc53-32df-4fd7-ad48-8aa87552872c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7e109cbe-ad31-45da-95c7-7394f06dbc13" start_index="0" end="4fb54b13-1257-448f-b97b-e7e43d914a88" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7e109cbe-ad31-45da-95c7-7394f06dbc13" start_index="0" end="40a466a9-7d43-4a44-ab1c-3c208cee283a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d7aa5c2b-bf0d-4c5e-b086-3edbf0f6cd94" start_index="0" end="4fb54b13-1257-448f-b97b-e7e43d914a88" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b00d5609-916c-4037-b034-6be766dd078e" start_index="0" end="4fb54b13-1257-448f-b97b-e7e43d914a88" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="0a393c40-661c-48d4-93a1-6933f186e675" annotationText="Выбираем папку с файлами" left="-3512.80594870515" top="-663.544795249861" width="242" height="177" fontSize="30" InitialTop="-581.544795249861" InitialHeight="125" TextblockHeight="72" backgrouund="#FFC1D676">
+      <Models ModelGuid="e229b194-ce0a-433f-b625-79650163e43b" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="c4c4a019-39cf-42ba-b504-bae2cd1ebd1e" annotationText="Фильтруем DWG" left="-3213.60979529574" top="-628.277782732937" width="599.83767801235" height="210.076935081528" fontSize="30" InitialTop="-582.277782732937" InitialHeight="194.076935081528" TextblockHeight="36" backgrouund="#FFC1D676">
+      <Models ModelGuid="68390206-09db-420d-9118-05ca0223cc8e" />
+      <Models ModelGuid="959d46cb-5b57-419a-b2fc-92a3933a2e2a" />
+      <Models ModelGuid="269f7f4a-d601-48ea-a01b-a1b4059d31fd" />
+      <Models ModelGuid="7e109cbe-ad31-45da-95c7-7394f06dbc13" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="2b192291-484d-43a1-8033-de7a1f3ea4fe" annotationText="Берем имена DWG для названия видов" left="-2199.37805322485" top="-353.7365721309" width="714.58157261482" height="330.766434021612" fontSize="30" InitialTop="-307.7365721309" InitialHeight="309.687377024164" TextblockHeight="36" backgrouund="#FFC1D676">
+      <Models ModelGuid="dccbea54-677a-4a31-b1a9-9c6fd7cd0591" />
+      <Models ModelGuid="40a466a9-7d43-4a44-ab1c-3c208cee283a" />
+      <Models ModelGuid="a3e8fc53-32df-4fd7-ad48-8aa87552872c" />
+      <Models ModelGuid="d7aa5c2b-bf0d-4c5e-b086-3edbf0f6cd94" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

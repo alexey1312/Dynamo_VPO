@@ -1,0 +1,386 @@
+{
+  "Uuid": "3c9d0464-8643-5ffe-96e5-ab1769818209",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "1.33_Создать рабочие наборы из EXCEL",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [
+    {
+      "Id": "c2e5f27b222a4c3f9bf9dfec519831ec",
+      "Name": "File Path",
+      "Type": "string",
+      "Value": ".\\Worksets.xlsx",
+      "Description": "Позволяет выбрать файл в системе и получить его имя"
+    },
+    {
+      "Id": "8d960a2305af40a797dd097f430182f9",
+      "Name": "String",
+      "Type": "string",
+      "Value": "ВК",
+      "Description": "Создание строки."
+    },
+    {
+      "Id": "bc90ad569029439fa5fe37fa6fbcfa7a",
+      "Name": "Boolean",
+      "Type": "boolean",
+      "Value": "false",
+      "Description": "Выбор между значениями true и false."
+    }
+  ],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
+      "HintPath": "L:\\03_ПО\\Revit\\DYNAMO\\01_ОБЩИЕ\\Worksets.xlsx",
+      "InputValue": ".\\Worksets.xlsx",
+      "NodeType": "ExtensionNode",
+      "Id": "c2e5f27b222a4c3f9bf9dfec519831ec",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "63712717fe5e47cba73eed715ceae6b7",
+          "Name": "",
+          "Description": "Filename",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Позволяет выбрать файл в системе и получить его имя"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.FileObject, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "3661046e5ee948c58f67bd6839d27b2f",
+      "Inputs": [
+        {
+          "Id": "8a77c5ce850842c9b6223a31a83b8c2d",
+          "Name": "path",
+          "Description": "Путь к файлу.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "1fa08048b7904ac9b352e4bc7562dfb3",
+          "Name": "file",
+          "Description": "Файловый объект",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Создание нового объекта на основе пути."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSOffice.Data.ImportExcel@var,string,bool,bool",
+      "Id": "50a694505df740f2adca27b14773deb8",
+      "Inputs": [
+        {
+          "Id": "4eeb4f5c15b04041ae80823bb6a198c6",
+          "Name": "file",
+          "Description": "Файл электронной таблицы Microsoft Excel.\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "478f60b1d3f9470abfa96de5f4f5ed24",
+          "Name": "sheetName",
+          "Description": "Имя рабочего листа, содержащего данные.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5894718fcd764d8492e48f85a64c942a",
+          "Name": "readAsStrings",
+          "Description": "Включение/выключение режима чтения файла Excel по строкам.\n\nbool\nЗначение по умолчанию : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e7d620fb40744641b4973a768e79c98c",
+          "Name": "showExcel",
+          "Description": "Включение/выключение режима отображения и скрытия главного окна Excel.\n\nbool\nЗначение по умолчанию : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "611402495c634b2da0e72a722f5d2552",
+          "Name": "data",
+          "Description": "Строки с данными из таблицы Excel.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Чтение данных из электронной таблицы Microsoft Excel. Данные считываются по строкам и возвращаются в виде наборов списков по строкам. Для индексов строк и столбцов предусмотрено нулевое значение. Например, значение в ячейке A1 будет отображаться в списке данных как [0; 0]. Для работы с данным узлом потребуется установленное приложение Microsoft Excel.\n\nData.ImportExcel (file: var, sheetName: string, readAsStrings: bool = false, showExcel: bool = true): var[][]"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "ВК",
+      "Id": "8d960a2305af40a797dd097f430182f9",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "55fa36dead0646b198a377f0671a70cf",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Создание строки."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
+      "Id": "a056413a09df421b882670d17517142e",
+      "Inputs": [
+        {
+          "Id": "41e0fb057ca04606a445f28222691b66",
+          "Name": "list",
+          "Description": "Список для выравнивания.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6e2a9ddfe932447caf031cf07c99521f",
+          "Name": "amt",
+          "Description": "Слои вложения для удаления.\n\nint\nЗначение по умолчанию : -1",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5bce1c3dc1e04f319b90f1b8b528040f",
+          "Name": "var[]..[]",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Выравнивание вложенного списка списков по определенному количественному значению.\n\nList.Flatten (list: var[]..[], amt: int = -1): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "cd7ec662-0b6e-4afd-8f1a-70f41d2de6d9",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "551a2621d0634170afb3aac05e12e638",
+      "Inputs": [
+        {
+          "Id": "7d12ec638f4c4796818dab2fcdae7155",
+          "Name": "worksetNames",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8e6284a735254f0c9c998f259737b559",
+          "Name": "names",
+          "Description": "возвращаемое значение",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Creates a workset or worksets from input names."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "bc90ad569029439fa5fe37fa6fbcfa7a",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6e179919a2e84acf879194ae7ac79da6",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "63712717fe5e47cba73eed715ceae6b7",
+      "End": "8a77c5ce850842c9b6223a31a83b8c2d",
+      "Id": "5b2ff9d9f401463cb921bc0dbd0acae9"
+    },
+    {
+      "Start": "1fa08048b7904ac9b352e4bc7562dfb3",
+      "End": "4eeb4f5c15b04041ae80823bb6a198c6",
+      "Id": "7e0e88a8a0904be18802ea75a6176166"
+    },
+    {
+      "Start": "611402495c634b2da0e72a722f5d2552",
+      "End": "41e0fb057ca04606a445f28222691b66",
+      "Id": "0f4936b56eb2471bb8c920289396ebeb"
+    },
+    {
+      "Start": "55fa36dead0646b198a377f0671a70cf",
+      "End": "478f60b1d3f9470abfa96de5f4f5ed24",
+      "Id": "a218b87427c144588121cc9266126d00"
+    },
+    {
+      "Start": "5bce1c3dc1e04f319b90f1b8b528040f",
+      "End": "7d12ec638f4c4796818dab2fcdae7155",
+      "Id": "c49f4b34afad41f789108bf8cf3f0a05"
+    },
+    {
+      "Start": "6e179919a2e84acf879194ae7ac79da6",
+      "End": "5894718fcd764d8492e48f85a64c942a",
+      "Id": "4d2847ddfdf24fc5a65838d167bf4df5"
+    }
+  ],
+  "Dependencies": [
+    "cd7ec662-0b6e-4afd-8f1a-70f41d2de6d9"
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.2.6826",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "File Path",
+        "Id": "c2e5f27b222a4c3f9bf9dfec519831ec",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1320.44741719225,
+        "Y": 91.9437155114872
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "File.FromPath",
+        "Id": "3661046e5ee948c58f67bd6839d27b2f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1459.43543195686,
+        "Y": 92.6258981901543
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Data.ImportExcel",
+        "Id": "50a694505df740f2adca27b14773deb8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1615.53452591645,
+        "Y": 166.409976203053
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "String",
+        "Id": "8d960a2305af40a797dd097f430182f9",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1514.72027368147,
+        "Y": 192.595863959894
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.Flatten",
+        "Id": "a056413a09df421b882670d17517142e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1887.4896410633,
+        "Y": 165.138556775525
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Workset.Create",
+        "Id": "551a2621d0634170afb3aac05e12e638",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2097.02636925109,
+        "Y": 159.060311786211
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "bc90ad569029439fa5fe37fa6fbcfa7a",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1458.3196290069,
+        "Y": 262.587159817747
+      }
+    ],
+    "Annotations": [],
+    "X": -717.63867483446393,
+    "Y": 124.41934793744079,
+    "Zoom": 0.56912923741756449
+  }
+}

@@ -1,0 +1,51 @@
+<Workspace Version="1.3.4.6666" X="872.817745442365" Y="-221.766527393545" zoom="1.30840596863468" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <CoreNodeModels.Input.StringInput guid="7c06a0f5-61de-4b30-b0a6-8712a2728224" type="CoreNodeModels.Input.StringInput" nickname="Имя параметра с количеством светильников в помещении" x="-562.237463636314" y="303.125792420812" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>LT_Количество в помещении</System.String>
+      <System.String value="LT_Количество в помещении" />
+    </CoreNodeModels.Input.StringInput>
+    <CoreNodeModels.Input.StringInput guid="f8678dfa-c358-412a-806c-ffcd73742f3f" type="CoreNodeModels.Input.StringInput" nickname="Имя параметра с высотой установки" x="-425.913012039235" y="406.664360420868" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>LT_Высота установки</System.String>
+      <System.String value="LT_Высота установки" />
+    </CoreNodeModels.Input.StringInput>
+    <DSRevitNodesUI.Levels guid="5a8165bd-417c-4dd0-9d56-9b45394462b3" type="DSRevitNodesUI.Levels" nickname="Levels" x="-496.858370235538" y="489.254382560446" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="77:Паркинг_План на отм. -3.650" />
+    <CoreNodeModels.Watch guid="e45a4305-cd73-40b3-8fb0-e5d8745f062e" type="CoreNodeModels.Watch" nickname="Watch" x="383.977779319259" y="426.217736537492" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="bbf05f48-5e0f-4047-80b8-5cdbb145b70f" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Set Installation Height and Quantity in Room to LF" x="-113.957805802578" y="381.116556832635" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <ID value="c3d342fc-37d5-401a-8113-e1b151c9bb03" />
+      <Name value="Set Installation Height and Quantity in Room to LF" />
+      <Description value="Данный узел записывает в свойства светильника высоту установки и количество светильников в помещении согласно ГОСТ 21.608-2014" />
+      <Inputs>
+        <Input value="quantityParameterName" />
+        <Input value="heigthParameterName" />
+        <Input value="referenceLevel" />
+        <Input value="refresh" />
+      </Inputs>
+      <Outputs>
+        <Output value="elements" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <CoreNodeModels.Input.BoolSelector guid="1747f3e4-b7ad-4bcc-b507-255205063318" type="CoreNodeModels.Input.BoolSelector" nickname="Обновить" x="-299.079291835176" y="589.988383155022" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>False</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="7c06a0f5-61de-4b30-b0a6-8712a2728224" start_index="0" end="bbf05f48-5e0f-4047-80b8-5cdbb145b70f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f8678dfa-c358-412a-806c-ffcd73742f3f" start_index="0" end="bbf05f48-5e0f-4047-80b8-5cdbb145b70f" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5a8165bd-417c-4dd0-9d56-9b45394462b3" start_index="0" end="bbf05f48-5e0f-4047-80b8-5cdbb145b70f" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bbf05f48-5e0f-4047-80b8-5cdbb145b70f" start_index="0" end="e45a4305-cd73-40b3-8fb0-e5d8745f062e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1747f3e4-b7ad-4bcc-b507-255205063318" start_index="0" end="bbf05f48-5e0f-4047-80b8-5cdbb145b70f" end_index="3" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

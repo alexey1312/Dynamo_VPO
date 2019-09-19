@@ -1,0 +1,44 @@
+<Workspace Version="1.3.2.2480" X="-1917.08331513397" Y="-1633.86426955309" zoom="0.530013951877677" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="7e6e7fda-22c0-467e-b831-cdbf473c2c2a" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="3959.75920829911" y="3687.32500057214" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="5906b478-46f5-49da-b29e-20309c7cb14f" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="3831.19828359608" y="3829.96693812362" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;Номер&quot;;" ShouldFocus="false" />
+    <DSRevitNodesUI.ElementsOfCategory guid="e1ffef7e-17fc-4fe7-9a19-26ca1a02126f" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="3751.07289273752" y="3687.7514341363" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfCategory>
+    <DSRevitNodesUI.Categories guid="0bf548d8-3ea3-4499-a07b-00c2d1f1a725" type="DSRevitNodesUI.Categories" nickname="Categories" x="3543.26879282399" y="3686.30046791794" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="429:Rooms" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="2add0fa3-2ecf-44a9-9e75-e8a3afdca616" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="4191.60119733922" y="3401.78315883758" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;ADSK_Номер помещения квартиры&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a46a69d6-98d1-460d-8903-6c374048d58c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.SetParameterByName" x="4726.36338762761" y="3333.04101875915" isVisible="false" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <DSRevitNodesUI.Categories guid="1da3a20b-6e7f-45c9-bff6-9b1776e836c9" type="DSRevitNodesUI.Categories" nickname="Categories" x="3752.06444441424" y="3553.4139278077" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="365:MechanicalEquipment" />
+    <DSRevitNodesUI.ElementsOfCategory guid="d6e2c619-5cb6-443c-976c-6f8a23f9090f" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="4048.03214720398" y="3561.80540869637" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfCategory>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="7e6e7fda-22c0-467e-b831-cdbf473c2c2a" start_index="0" end="a46a69d6-98d1-460d-8903-6c374048d58c" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5906b478-46f5-49da-b29e-20309c7cb14f" start_index="0" end="7e6e7fda-22c0-467e-b831-cdbf473c2c2a" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e1ffef7e-17fc-4fe7-9a19-26ca1a02126f" start_index="0" end="7e6e7fda-22c0-467e-b831-cdbf473c2c2a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0bf548d8-3ea3-4499-a07b-00c2d1f1a725" start_index="0" end="e1ffef7e-17fc-4fe7-9a19-26ca1a02126f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2add0fa3-2ecf-44a9-9e75-e8a3afdca616" start_index="0" end="a46a69d6-98d1-460d-8903-6c374048d58c" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1da3a20b-6e7f-45c9-bff6-9b1776e836c9" start_index="0" end="d6e2c619-5cb6-443c-976c-6f8a23f9090f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d6e2c619-5cb6-443c-976c-6f8a23f9090f" start_index="0" end="a46a69d6-98d1-460d-8903-6c374048d58c" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="8f0b388d-1f9d-4551-bb23-f83921ead39b" annotationText="Запись параметров" left="4181.60119733922" top="3303.04101875915" width="824.76219028839" height="191.74214007843" fontSize="14" InitialTop="3333.04101875915" InitialHeight="394.405867770397" TextblockHeight="20" backgrouund="#FFBB87C6">
+      <Models ModelGuid="2add0fa3-2ecf-44a9-9e75-e8a3afdca616" />
+      <Models ModelGuid="a46a69d6-98d1-460d-8903-6c374048d58c" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

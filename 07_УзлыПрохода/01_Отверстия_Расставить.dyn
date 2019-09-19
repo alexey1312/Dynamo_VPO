@@ -1,0 +1,641 @@
+<Workspace Version="1.3.2.2480" X="101.102722985673" Y="-227.617165211078" zoom="0.383207207878483" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSRevitNodesUI.FamilyTypes guid="7d12d716-a62c-41b6-ad8e-f53468021aa3" type="DSRevitNodesUI.FamilyTypes" nickname="Тип прямоугольного проёма" x="135.241222657144" y="352.67671360046" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="392:Задание_Отверстие_Стены_Пр:ОВ.В" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="9496f683-88f5-4533-9788-1cb8226b6675" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Максимальное отношение сторон" x="134.569867556425" y="993.671130861615" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="3;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="759ee11a-df42-4d2b-9593-a4707ac1fcc8" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Максимально допустимый диаметр, мм" x="134.569867556425" y="1095.89284548802" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="0;" ShouldFocus="false" />
+    <DSRevitNodesUI.FamilyTypes guid="c064b48d-5bb0-413d-b823-2b80e7b83cbc" type="DSRevitNodesUI.FamilyTypes" nickname="Тип круглого проёма" x="135.241222657144" y="440.595785452796" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="388:Задание_Отверстие_Стены_Кр:ОВ.В" />
+    <CoreNodeModels.Input.BoolSelector guid="4196b40c-0e96-4ff2-93f4-36671d8ac471" type="CoreNodeModels.Input.BoolSelector" nickname="Для прямоугольного отверстия" x="134.569867556425" y="572.004069438229" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>False</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <CoreNodeModels.Input.BoolSelector guid="9e7d77ac-ef74-4e0b-9b95-1d525a3027d6" type="CoreNodeModels.Input.BoolSelector" nickname="Для круглого отверстия" x="134.569867556425" y="636.880079893473" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>False</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="0e00a9cc-f4f2-4583-9476-eed22d0fd8de" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Для прямоугольного отверстия" x="134.569867556425" y="758.921815904905" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="100;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="5cbff9ec-2a49-4120-9546-ee41b83a7531" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Для круглого отверстия" x="134.569867556425" y="844.104665916005" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="100;" ShouldFocus="false" />
+    <PythonNodeModels.PythonNode guid="aa7eb0a2-45d8-4c62-9de4-67b358a9e0aa" type="PythonNodeModels.PythonNode" nickname="Заглушки в стенах" x="1513.78640405455" y="972.105434239449" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="12">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <PortInfo index="5" default="False" />
+      <PortInfo index="6" default="False" />
+      <PortInfo index="7" default="False" />
+      <PortInfo index="8" default="False" />
+      <PortInfo index="9" default="False" />
+      <PortInfo index="10" default="False" />
+      <PortInfo index="11" default="False" />
+      <Script># Подгрузка библиотек
+import clr
+
+clr.AddReference('RevitAPI')
+import Autodesk
+from Autodesk.Revit.DB import *
+
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+import math
+
+# Получение текущего проекта
+doc = DocumentManager.Instance.CurrentDBDocument
+
+# Получение списка связанных файлов
+linkInstances = FilteredElementCollector(doc).OfClass(RevitLinkInstance)
+
+# Опции для работы функций
+opt = Options() # Для получения геометрии
+optS = SolidCurveIntersectionOptions() # Для нахождения пересечения объёмного тела с кривой
+nonStr = Autodesk.Revit.DB.Structure.StructuralType.NonStructural # Для вставки семейства в основу
+
+# Входные данные
+rectnOpen = UnwrapElement(IN[0]) # Тип прямоугольного проёма
+roundOpen = UnwrapElement(IN[1]) # Тип круглого проёма
+rectnReservType = IN[2] # Тип запаса для прямоугольного проёма
+roundReservType = IN[3] # Тип запаса для круглого проёма
+if rectnReservType:
+	rectnReserv = IN[4] # Запас для прямоугольного проёма как отношение сторон
+else:
+	rectnReserv = IN[4] / 304.8 # Запас для прямоугольного проёма в мм
+if roundReservType:
+	roundReserv = IN[5] # Запас для круглого проёма как отношение сторон
+else:
+	roundReserv = IN[5] / 304.8 # Запас для круглого проёма в мм
+koef = IN[6] # Максимальное отношение сторон для круглого отверстия
+maxDiam = IN[7] / 304.8 # Максимальный диаметр для круглого отверстия
+isLink = IN[8] # Определение того, в связанном ли файле находятся сети
+nameLink = IN[9] # Часть имени файла с сетями для корректного определения
+date = IN[10] # Дата или другой комментарий, указывающий на версию задания
+
+# Фильтрация связанных файлов
+if isLink:
+	a = 0
+	for inst in linkInstances:
+		if nameLink in inst.Name:
+			linkDoc = inst.GetLinkDocument()
+			a = 1
+	if a == 0:
+		linkDoc = doc
+else:
+	linkDoc = doc
+
+# Получение коллекции всех экземпляров стен
+walls = FilteredElementCollector(linkDoc).OfCategory(BuiltInCategory.OST_Walls).WhereElementIsNotElementType().ToElements()
+
+# Функция расчёта и создания проёма
+def creation(communication, width):
+	# Получение имени категории коммуникации
+	categName = communication.Category.Name
+	# Определение параметров ширины и высоты для труб
+	if categName == 'Трубы':
+		# Получение внешнего диаметра трубы
+		commDiam = communication.get_Parameter(BuiltInParameter.RBS_PIPE_OUTER_DIAMETER).AsDouble()
+		commWidth = commDiam
+		commHeight = commDiam
+	# Определение параметров ширины и высоты для воздуховодов	
+	elif categName == 'Воздуховоды':
+		# Определение формы сечения воздуховода
+		sect = communication.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM).AsValueString()
+		if sect == 'Воздуховод круглого сечения':
+			commDiam = communication.get_Parameter(BuiltInParameter.RBS_CURVE_DIAMETER_PARAM).AsDouble()
+			commWidth = commDiam
+			commHeight = commDiam
+		elif sect == 'Воздуховод овального сечения' or sect == 'Воздуховод прямоугольного сечения':
+			commWidth = communication.get_Parameter(BuiltInParameter.RBS_CURVE_WIDTH_PARAM).AsDouble()
+			commHeight = communication.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM).AsDouble()
+	# Определение параметров ширины и высоты для коробов
+	elif categName == 'Короба':
+		# Получение внешнего диаметра короба
+		commDiam = communication.get_Parameter(BuiltInParameter.RBS_CONDUIT_DIAMETER_PARAM).AsDouble()
+		commWidth = commDiam
+		commHeight = commDiam	
+	# Определение параметров ширины и высоты для кабельных лотков
+	elif categName == 'Кабельные лотки':
+		commWidth = communication.get_Parameter(BuiltInParameter.RBS_CABLETRAY_WIDTH_PARAM).AsDouble()
+		commHeight = communication.get_Parameter(BuiltInParameter.RBS_CABLETRAY_HEIGHT_PARAM).AsDouble()		
+	# Получение коэффициентов уравнения прямой (аналогично стене)
+	commCurve = communication.Location.Curve # Получение кривой эскиза
+	line = geomSolid.IntersectWithCurve(commCurve, optS).GetCurveSegment(0) # Получение геометрии (списка кривых) пересечения и взятие первой и единственной кривой
+	end0 = line.GetEndPoint(0)
+	end1 = line.GetEndPoint(1)
+	x0_ = end0.X; y0_ = end0.Y;	x1_ = end1.X; y1_ = end1.Y; z0_ = end0.Z; z1_ = end1.Z
+	A2 = y0_-y1_; B2 = x1_-x0_; C2 = z1_-z0_
+	
+	# Получение центра пересечения стены и трубы
+	center = XYZ((end0.X + end1.X) / 2, (end0.Y + end1.Y) / 2, (end0.Z + end1.Z) / 2) # Получение центра пересечения стены и трубы
+	
+	# Формирование направления для вставки семейства
+	direction = XYZ(x1-x0, y1-y0, 0)
+	
+	# Получение угла пересечения кривой стены и кривой трубы в плане (для определения минимальной ширины проёма)
+	cosin = (A1*A2 + B1*B2) / ((A1**2 + B1**2)**0.5 * (A2**2 + B2**2)**0.5) # Вычисление косинуса между прямыми трубы и стены
+	angleHor = math.degrees(math.acos(cosin)) # Вычисление горизонтального угла (в градусах)
+	if angleHor &gt; 90:
+		angleHor = 180 - angleHor # Определение острого угла при пересечении
+	newAngleHor = math.radians(angleHor) # Перевод острого угла в радианы
+	# Определение минимальной ширины проёма
+	minWidth = width/math.tan(newAngleHor) + commWidth/math.sin(newAngleHor)
+	# Определение ширины проёма с учётом допуска
+	if rectnReservType:
+		openWidth = minWidth * rectnReserv
+	else:
+		openWidth = minWidth + rectnReserv
+	
+	# Получение угла пересечения кривой стены и кривой трубы по вертикали (для определения минимальной высоты проёма, аналогично предыдущему)
+	cosin = C2 / ((A2**2 + B2**2+C2**2)**0.5) # Вычисление косинуса между трубой и горизонтальной плоскостью
+	angleVert = math.degrees(math.acos(cosin)) # Вычисление вертикального угла (в градусах)
+	if angleVert &gt; 90:
+		angleVert = 180 - angleVert
+	newAngleVert = math.radians(angleVert)
+	# Определение минимальной высоты проёма
+	minHeight = width/math.tan(newAngleVert) + commHeight/math.sin(newAngleVert)
+	# Определение высоты проёма с учётом допуска
+	if rectnReservType:
+		openHeight = minHeight * rectnReserv
+	else:
+		openHeight = minHeight + rectnReserv
+	
+	# Округление размеров до сантиметров
+	openWidth = round(openWidth * 304.8, -1) / 304.8
+	openHeight = round(openHeight * 304.8, -1) / 304.8
+	
+	# Проверка того, нужен ли круглый проём, и создание проёма
+	if openHeight &gt; openWidth: # Случай, если высота больше ширины
+		if openHeight/openWidth &lt;= koef and openHeight &lt;= maxDiam: # Проверка на допустимые значения
+			# Создание круглого проёма и задание его диаметра
+			cutNew = doc.Create.NewFamilyInstance(center, roundOpen, direction, doc.GetElement(wall.LevelId), nonStr)
+			cutNew.LookupParameter('Диаметр_Фактический').Set(openHeight)
+		else:
+			# Создание прямоугольного проёма и задание его ширины и высоты
+			cutNew = doc.Create.NewFamilyInstance(center, rectnOpen, direction, doc.GetElement(wall.LevelId), nonStr)
+			cutNew.LookupParameter('Ширина_Фактическая').Set(openWidth)
+			cutNew.LookupParameter('Высота_Фактическая').Set(openHeight)
+	else: # Случай, если ширина больше высоты (аналогично)
+		if openWidth/openHeight &lt;= koef and openWidth &lt;= maxDiam:
+			cutNew = doc.Create.NewFamilyInstance(center, roundOpen, direction, doc.GetElement(wall.LevelId), nonStr)
+			cutNew.LookupParameter('Диаметр_Фактический').Set(openWidth)
+		else:
+			cutNew = doc.Create.NewFamilyInstance(center, rectnOpen, direction, doc.GetElement(wall.LevelId), nonStr)
+			cutNew.LookupParameter('Ширина_Фактическая').Set(openWidth)
+			cutNew.LookupParameter('Высота_Фактическая').Set(openHeight)
+	cutNew.LookupParameter('Дисциплина проёма').Set(categName)
+	cutNew.LookupParameter('Отверстие_Глубина').Set(categName)
+	cutNew.LookupParameter('Дата').Set(date)
+	
+	# Опеределение высотной отметки пересечения стены и трубы
+	com_level = doc.GetElement(communication.get_Parameter(BuiltInParameter.RBS_START_LEVEL_PARAM).AsElementId())
+	height_level = com_level.get_Parameter(BuiltInParameter.LEVEL_ELEV).AsDouble()
+	name_level = com_level.get_Parameter(BuiltInParameter.DATUM_TEXT).AsString()
+	cutNew.LookupParameter('ADSK_Этаж').Set(name_level)
+	cutNew.LookupParameter('ADSK_Отверстие_Отметка этажа').Set(height_level)
+	
+	return communication, cutNew
+	
+
+
+# Формирование пустого выходного списка
+lst = []
+
+# Открытие транзакции
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+# Аквтивация загруженных семейств проёмов (если ещё не были использованы)
+rectnOpen.Activate()
+roundOpen.Activate()
+
+# Обработка списка экземпляров стен
+for wall in walls:
+	# Получение ширины
+	width = wall.Width
+	
+	# Получение коэффициентов уравнения прямой
+	wallCurve = wall.Location.Curve # Получение кривой эскиза стены
+	endWall0 = wallCurve.GetEndPoint(0) # Получение начальной точки кривой
+	endWall1 = wallCurve.GetEndPoint(1) # Получение конечной точки кривой
+	x0 = endWall0.X; y0 = endWall0.Y; x1 = endWall1.X; y1 = endWall1.Y # Получение отдельных координат точек
+	A1 = y0-y1;	B1 = x1-x0 # Получение коэффициентов уравнения прямой
+	
+	# Получение геометрии стены
+	geomElem = wall.get_Geometry(opt)
+	for geomObj in geomElem:
+		geomSolid = geomObj
+		
+	# Получение коллекции всех экземпляров труб в проекте (необходимо каждый раз брать заново)
+	pipes = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_PipeCurves).WhereElementIsNotElementType()
+	# Извлечение только тех из них, которые пересекаются с объёмом данной стены
+	pipeInters = pipes.WherePasses(ElementIntersectsSolidFilter(geomSolid)).ToElements()
+	
+	# Получение коллекции всех экземпляров труб в проекте (необходимо каждый раз брать заново)
+	ducts = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_DuctCurves).WhereElementIsNotElementType()
+	# Извлечение только тех из них, которые пересекаются с объёмом данной стены
+	ductInters = ducts.WherePasses(ElementIntersectsSolidFilter(geomSolid)).ToElements()
+	
+	# Получение коллекции всех экземпляров коробов в проекте (необходимо каждый раз брать заново)
+	conds = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Conduit).WhereElementIsNotElementType()
+	# Извлечение только тех из них, которые пересекаются с объёмом данной стены
+	condInters = conds.WherePasses(ElementIntersectsSolidFilter(geomSolid)).ToElements()
+	
+	# Получение коллекции всех экземпляров кабельных лотков в проекте (необходимо каждый раз брать заново)
+	cabls = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_CableTray).WhereElementIsNotElementType()
+	# Извлечение только тех из них, которые пересекаются с объёмом данной стены
+	cablInters = cabls.WherePasses(ElementIntersectsSolidFilter(geomSolid)).ToElements()
+	
+	# Формирование пустого промежуточного списка
+	_lst = []
+	
+	# Обработка труб, пересекающихся с данной стеной
+	for pipe in pipeInters:
+		result = creation(pipe, width)	
+		_lst.append(result)
+	
+	# Обработка воздуховодов, пересекающихся с данной стеной	
+	for duct in ducts:
+		result = creation(duct, width)	
+		_lst.append(result)
+	
+	# Обработка коробов, пересекающихся с данной стеной	
+	for cond in conds:
+		result = creation(cond, width)	
+		_lst.append(result)
+	
+	# Обработка кабельных лотков, пересекающихся с данной стеной	
+	for cabl in cabls:
+		result = creation(cabl, width)	
+		_lst.append(result)
+		
+	lst.append(_lst)
+
+# Закрытие транзакции
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = lst</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Input.BoolSelector guid="b474b56e-ad74-4285-a3c5-6d85a9e82de8" type="CoreNodeModels.Input.BoolSelector" nickname="Архитектура в связанном файле?" x="100.006674422122" y="1505.49434242351" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>False</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <CoreNodeModels.Input.StringInput guid="d547b158-3459-4810-983c-959cae9424d9" type="CoreNodeModels.Input.StringInput" nickname="Часть имени связанного файла" x="98.0439903253042" y="1577.09203211471" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>АР</System.String>
+      <System.String value="АР" />
+    </CoreNodeModels.Input.StringInput>
+    <DSRevitNodesUI.FamilyTypes guid="e81a4ffd-bd99-4603-86fd-67fe7bdfe100" type="DSRevitNodesUI.FamilyTypes" nickname="Тип прямоугольного проёма" x="331.740292338767" y="2131.28137281113" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="384:Задание_Отверстие_Перекрытия_Пр:ОВ.В" />
+    <DSRevitNodesUI.FamilyTypes guid="3505bb29-bd9c-4572-9f10-6ded0b71b8e8" type="DSRevitNodesUI.FamilyTypes" nickname="Тип круглого проёма" x="331.740292338767" y="2219.20044466347" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="380:Задание_Отверстие_Перекрытия_Кр:ОВ.В" />
+    <PythonNodeModels.PythonNode guid="44873cf1-8f9e-4005-b0b7-96e285fe24d9" type="PythonNodeModels.PythonNode" nickname="Заглушки в перекрытиях" x="1495.79318390598" y="2158.02307185949" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="12">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <PortInfo index="5" default="False" />
+      <PortInfo index="6" default="False" />
+      <PortInfo index="7" default="False" />
+      <PortInfo index="8" default="False" />
+      <PortInfo index="9" default="False" />
+      <PortInfo index="10" default="False" />
+      <PortInfo index="11" default="False" />
+      <Script># Подгрузка библиотек
+import clr
+
+clr.AddReference('RevitAPI')
+import Autodesk
+from Autodesk.Revit.DB import *
+
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+import math
+
+# Получение текущего проекта
+doc = DocumentManager.Instance.CurrentDBDocument
+
+# Получение списка связанных файлов
+linkInstances = FilteredElementCollector(doc).OfClass(RevitLinkInstance)
+
+# Опции для работы функций
+opt = Options() # Для получения геометрии
+optS = SolidCurveIntersectionOptions() # Для нахождения пересечения объёмного тела с кривой
+nonStr = Autodesk.Revit.DB.Structure.StructuralType.NonStructural # Для вставки семейства в основу
+
+# Входные данные
+rectnOpen = UnwrapElement(IN[0]) # Тип прямоугольного проёма
+roundOpen = UnwrapElement(IN[1]) # Тип круглого проёма
+rectnReservType = IN[2] # Тип запаса для прямоугольного проёма
+roundReservType = IN[3] # Тип запаса для круглого проёма
+if rectnReservType:
+	rectnReserv = IN[4] # Запас для прямоугольного проёма как отношение сторон
+else:
+	rectnReserv = IN[4] / 304.8 # Запас для прямоугольного проёма в мм
+if roundReservType:
+	roundReserv = IN[5] # Запас для круглого проёма как отношение сторон
+else:
+	roundReserv = IN[5] / 304.8 # Запас для круглого проёма в мм
+koef = IN[6] # Максимальное отношение сторон для круглого отверстия
+maxDiam = IN[7] / 304.8 # Максимальный диаметр для круглого отверстия
+isLink = IN[8] # Определение того, в связанном ли файле находятся сети
+nameLink = IN[9] # Часть имени файла с сетями для корректного определения
+date = IN[10] # Дата или другой комментарий, указывающий на версию задания
+
+# Фильтрация связанных файлов
+if isLink:
+	a = 0
+	for inst in linkInstances:
+		if nameLink in inst.Name:
+			linkDoc = inst.GetLinkDocument()
+			a = 1
+	if a == 0:
+		linkDoc = doc
+else:
+	linkDoc = doc
+	
+# Получение коллекции всех экземпляров плит
+floors = FilteredElementCollector(linkDoc).OfCategory(BuiltInCategory.OST_Floors).WhereElementIsNotElementType().ToElements()
+
+# Функция расчёта и создания проёма
+def creation(communication, width):
+	# Получение имени категории коммуникации
+	categName = communication.Category.Name
+	# Определение параметров ширины и высоты для труб
+	if categName == 'Трубы':
+		# Получение внешнего диаметра трубы
+		commDiam = communication.get_Parameter(BuiltInParameter.RBS_PIPE_OUTER_DIAMETER).AsDouble()
+		commWidth = commDiam
+		commHeight = commDiam
+		direction = XYZ(0, 0, 0)
+	# Определение параметров ширины и высоты для воздуховодов	
+	elif categName == 'Воздуховоды':
+		# Определение формы сечения воздуховода
+		sect = communication.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM).AsValueString()
+		if sect == 'Воздуховод круглого сечения':
+			commDiam = communication.get_Parameter(BuiltInParameter.RBS_CURVE_DIAMETER_PARAM).AsDouble()
+			commWidth = commDiam
+			commHeight = commDiam
+			direction = XYZ(0, 0, 0)
+		# Если воздуховод прямоугольного или овального сечения, вместе с шириной и высотой отверстия необходимо найти угол поворота в плане
+		elif sect == 'Воздуховод прямоугольного сечения':
+			commWidth = communication.get_Parameter(BuiltInParameter.RBS_CURVE_WIDTH_PARAM).AsDouble()
+			commHeight = communication.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM).AsDouble()
+			commGeom = communication.get_Geometry(opt)
+			# Для определения направления берём боковую сторону воздуховода и находим нормаль к ней
+			for geomObj in commGeom:
+				commGeomSolid = geomObj
+			commFaces = commGeomSolid.Faces
+			for face in commFaces:
+				faceNormal = face.FaceNormal
+				# Проверка того, что берётся именно боковая грань
+				if faceNormal.Z == 0:
+					direction = faceNormal
+	# Определение параметров ширины и высоты для кабельных лотков
+	elif categName == 'Короба':
+		# Получение внешнего диаметра короба
+		commDiam = communication.get_Parameter(BuiltInParameter.RBS_CONDUIT_DIAMETER_PARAM).AsDouble()
+		commWidth = commDiam
+		commHeight = commDiam
+		direction = XYZ(0, 0, 0)
+	# Определение параметров ширины и высоты для воздуховодов	
+	elif categName == 'Кабельные лотки':
+		# Вместе с шириной и высотой отверстия необходимо найти угол поворота в плане
+		commWidth = communication.get_Parameter(BuiltInParameter.RBS_CABLETRAY_WIDTH_PARAM).AsDouble()
+		commHeight = communication.get_Parameter(BuiltInParameter.RBS_CABLETRAY_HEIGHT_PARAM).AsDouble()
+		commGeom = communication.get_Geometry(opt)
+		# Для определения направления берём боковую сторону кабельного лотка и находим нормаль к ней (
+		for geomObj in commGeom:
+			commGeomSolid = geomObj
+		commFaces = commGeomSolid.Faces
+		for face in commFaces:
+			faceNormal = face.FaceNormal
+			# Проверка того, что берётся именно боковая грань
+			if faceNormal.Z == 0:
+				# В отличие от воздуховода, у кабельного лотка берём не нормаль, а касательную
+				direction = XYZ(faceNormal.Y, -faceNormal.X, faceNormal.Z)
+
+	# Получение коэффициентов уравнения прямой
+	commCurve = communication.Location.Curve # Получение кривой эскиза
+	line = geomSolid.IntersectWithCurve(commCurve, optS).GetCurveSegment(0) # Получение геометрии (списка кривых) пересечения и взятие первой и единственной кривой
+	end0 = line.GetEndPoint(0)
+	end1 = line.GetEndPoint(1)
+	x0_ = end0.X; y0_ = end0.Y;	x1_ = end1.X; y1_ = end1.Y; z0_ = end0.Z; z1_ = end1.Z
+	A2 = y0_-y1_; B2 = x1_-x0_; C2 = z1_-z0_
+	
+	# Получение центра пересечения плиты и коммуникации
+	center = XYZ((end0.X + end1.X) / 2, (end0.Y + end1.Y) / 2, (end0.Z + end1.Z) / 2) # Получение центра пересечения плиты и комуникации
+	
+	# Определение ширины проёма с учётом допуска
+	if rectnReservType:
+		openWidth = commWidth * rectnReserv
+	else:
+		openWidth = commWidth + rectnReserv
+	
+	# Определение высоты проёма с учётом допуска
+	if rectnReservType:
+		openHeight = commHeight * rectnReserv
+	else:
+		openHeight = commHeight + rectnReserv
+
+	# Округление размеров до сантиметров
+	openWidth = round(openWidth * 304.8, -1) / 304.8
+	openHeight = round(openHeight * 304.8, -1) / 304.8
+	
+	# Проверка того, нужен ли круглый проём, и создание проёма
+	if openHeight &gt; openWidth: # Случай, если высота больше ширины
+		if openHeight/openWidth &lt;= koef and openHeight &lt;= maxDiam: # Проверка на допустимые значения
+			# Создание круглого проёма и задание его диаметра
+			cutNew = doc.Create.NewFamilyInstance(center, roundOpen, direction, doc.GetElement(floor.LevelId), nonStr)
+			cutNew.LookupParameter('Диаметр_Фактический').Set(openHeight)
+		else:
+			# Создание прямоугольного проёма и задание его ширины и высоты
+			cutNew = doc.Create.NewFamilyInstance(center, rectnOpen, direction, doc.GetElement(floor.LevelId), nonStr)
+			cutNew.LookupParameter('Ширина_Фактическая').Set(openWidth)
+			cutNew.LookupParameter('Глубина_Фактическая').Set(openHeight)
+			cutNew.LookupParameter('Поворот X').Set(direction.X)
+			cutNew.LookupParameter('Поворот Y').Set(direction.Y)
+	else: # Случай, если ширина больше высоты (аналогично)
+		if openWidth/openHeight &lt;= koef and openWidth &lt;= maxDiam:
+			cutNew = doc.Create.NewFamilyInstance(center, roundOpen, direction, doc.GetElement(floor.LevelId), nonStr)
+			cutNew.LookupParameter('Диаметр_Фактический').Set(openWidth)
+		else:
+			cutNew = doc.Create.NewFamilyInstance(center, rectnOpen, direction, doc.GetElement(floor.LevelId), nonStr)
+			cutNew.LookupParameter('Ширина_Фактическая').Set(openWidth)
+			cutNew.LookupParameter('Глубина_Фактическая').Set(openHeight)
+			cutNew.LookupParameter('Поворот X').Set(direction.X)
+			cutNew.LookupParameter('Поворот Y').Set(direction.Y)
+	cutNew.LookupParameter('Дисциплина проёма').Set(categName)
+	cutNew.LookupParameter('Высота_Фактическая').Set(width)
+	cutNew.LookupParameter('Дата').Set(date)
+	# Опеределение высотной отметки пересечения стены и трубы
+	com_level = doc.GetElement(communication.get_Parameter(BuiltInParameter.RBS_START_LEVEL_PARAM).AsElementId())
+	height_level = com_level.get_Parameter(BuiltInParameter.LEVEL_ELEV).AsDouble()
+	name_level = com_level.get_Parameter(BuiltInParameter.DATUM_TEXT).AsString()
+	cutNew.LookupParameter('ADSK_Этаж').Set(name_level)
+			
+	return communication, cutNew
+
+# Формирование пустого выходного списка
+lst = []
+
+# Открытие транзакции
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+# Аквтивация загруженных семейств проёмов (если ещё не были использованы)
+rectnOpen.Activate()
+roundOpen.Activate()
+
+# Обработка списка экземпляров плит
+for floor in floors:
+	# Получение ширины
+	width = floor.get_Parameter(BuiltInParameter.FLOOR_ATTR_THICKNESS_PARAM).AsDouble()
+
+	# Получение геометрии стены
+	geomElem = floor.get_Geometry(opt)
+	for geomObj in geomElem:
+		geomSolid = geomObj
+		
+	# Получение коллекции всех экземпляров труб в проекте (необходимо каждый раз брать заново)
+	pipes = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_PipeCurves).WhereElementIsNotElementType()
+	# Извлечение только тех из них, которые пересекаются с объёмом данной плиты
+	pipeInters = pipes.WherePasses(ElementIntersectsSolidFilter(geomSolid)).ToElements()
+	
+	# Получение коллекции всех экземпляров труб в проекте (необходимо каждый раз брать заново)
+	ducts = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_DuctCurves).WhereElementIsNotElementType()
+	# Извлечение только тех из них, которые пересекаются с объёмом данной плиты
+	ductInters = ducts.WherePasses(ElementIntersectsSolidFilter(geomSolid)).ToElements()
+	
+	# Получение коллекции всех экземпляров коробов в проекте (необходимо каждый раз брать заново)
+	conds = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Conduit).WhereElementIsNotElementType()
+	# Извлечение только тех из них, которые пересекаются с объёмом данной плиты
+	condInters = conds.WherePasses(ElementIntersectsSolidFilter(geomSolid)).ToElements()
+	
+	# Получение коллекции всех экземпляров кабельных лотков в проекте (необходимо каждый раз брать заново)
+	cabls = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_CableTray).WhereElementIsNotElementType()
+	# Извлечение только тех из них, которые пересекаются с объёмом данной плиты
+	cablInters = cabls.WherePasses(ElementIntersectsSolidFilter(geomSolid)).ToElements()
+	
+	# Формирование пустого промежуточного списка
+	_lst = []
+	
+	# Обработка труб, пересекающихся с данной плитой
+	for pipe in pipeInters:
+		result = creation(pipe, width)	
+		_lst.append(result)
+	
+	# Обработка воздуховодов, пересекающихся с данной плитой	
+	for duct in ducts:
+		result = creation(duct, width)	
+		_lst.append(result)
+		
+	# Обработка коробов, пересекающихся с данной стеной	
+	for cond in conds:
+		result = creation(cond, width)	
+		_lst.append(result)
+
+	# Обработка кабельных лотков, пересекающихся с данной стеной	
+	for cabl in cabls:
+		result = creation(cabl, width)	
+		_lst.append(result)
+
+	lst.append(_lst)
+
+# Закрытие транзакции
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = lst</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="238cd190-421b-463d-a376-7a5e961936f0" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Максимальное отношение сторон" x="348.416910051833" y="2810.15130301299" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="3;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="da234035-c3e0-4b57-9b7e-cbd36b41efea" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Максимально допустимый диаметр, мм" x="348.416910051833" y="2912.37301763939" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="4b5fde33-2d02-49cf-a401-98e077f44b00" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Для прямоугольного отверстия" x="348.416910051833" y="2575.40198805628" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="100;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="365526a7-dc67-4ec6-aa6f-c5bb54cb567e" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Для круглого отверстия" x="348.416910051833" y="2660.58483806738" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="100;" ShouldFocus="false" />
+    <CoreNodeModels.Input.BoolSelector guid="8203b452-e124-48f2-9450-1923194f2942" type="CoreNodeModels.Input.BoolSelector" nickname="Для круглого отверстия" x="348.416910051833" y="2453.36025204485" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>False</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <CoreNodeModels.Input.BoolSelector guid="ce04da18-77af-4e60-a946-8ef0625f2e83" type="CoreNodeModels.Input.BoolSelector" nickname="Для прямоугольного отверстия" x="348.416910051833" y="2388.4842415896" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>False</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <CoreNodeModels.FromObject guid="7ea398fc-fcb2-4a88-a7f4-e37b203d6db9" type="CoreNodeModels.FromObject" nickname="String from Object" x="221.725218358108" y="1750.41948741054" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.FromObject>
+    <CoreNodeModels.Input.BoolSelector guid="25faffe5-d7d6-47d0-88a3-770311263c7e" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="88.6666771971194" y="1399.32393916915" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>False</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="13456830-79e5-4cb6-9d10-e332bce56e4f" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="DateTime.Now" x="88.3792909987662" y="1751.04266764166" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.DateTime.Now" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="7d12d716-a62c-41b6-ad8e-f53468021aa3" start_index="0" end="aa7eb0a2-45d8-4c62-9de4-67b358a9e0aa" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9496f683-88f5-4533-9788-1cb8226b6675" start_index="0" end="aa7eb0a2-45d8-4c62-9de4-67b358a9e0aa" end_index="6" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="759ee11a-df42-4d2b-9593-a4707ac1fcc8" start_index="0" end="aa7eb0a2-45d8-4c62-9de4-67b358a9e0aa" end_index="7" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c064b48d-5bb0-413d-b823-2b80e7b83cbc" start_index="0" end="aa7eb0a2-45d8-4c62-9de4-67b358a9e0aa" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4196b40c-0e96-4ff2-93f4-36671d8ac471" start_index="0" end="aa7eb0a2-45d8-4c62-9de4-67b358a9e0aa" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9e7d77ac-ef74-4e0b-9b95-1d525a3027d6" start_index="0" end="aa7eb0a2-45d8-4c62-9de4-67b358a9e0aa" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0e00a9cc-f4f2-4583-9476-eed22d0fd8de" start_index="0" end="aa7eb0a2-45d8-4c62-9de4-67b358a9e0aa" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5cbff9ec-2a49-4120-9546-ee41b83a7531" start_index="0" end="aa7eb0a2-45d8-4c62-9de4-67b358a9e0aa" end_index="5" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b474b56e-ad74-4285-a3c5-6d85a9e82de8" start_index="0" end="aa7eb0a2-45d8-4c62-9de4-67b358a9e0aa" end_index="8" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b474b56e-ad74-4285-a3c5-6d85a9e82de8" start_index="0" end="44873cf1-8f9e-4005-b0b7-96e285fe24d9" end_index="8" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d547b158-3459-4810-983c-959cae9424d9" start_index="0" end="aa7eb0a2-45d8-4c62-9de4-67b358a9e0aa" end_index="9" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d547b158-3459-4810-983c-959cae9424d9" start_index="0" end="44873cf1-8f9e-4005-b0b7-96e285fe24d9" end_index="9" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e81a4ffd-bd99-4603-86fd-67fe7bdfe100" start_index="0" end="44873cf1-8f9e-4005-b0b7-96e285fe24d9" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3505bb29-bd9c-4572-9f10-6ded0b71b8e8" start_index="0" end="44873cf1-8f9e-4005-b0b7-96e285fe24d9" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="238cd190-421b-463d-a376-7a5e961936f0" start_index="0" end="44873cf1-8f9e-4005-b0b7-96e285fe24d9" end_index="6" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="da234035-c3e0-4b57-9b7e-cbd36b41efea" start_index="0" end="44873cf1-8f9e-4005-b0b7-96e285fe24d9" end_index="7" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4b5fde33-2d02-49cf-a401-98e077f44b00" start_index="0" end="44873cf1-8f9e-4005-b0b7-96e285fe24d9" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="365526a7-dc67-4ec6-aa6f-c5bb54cb567e" start_index="0" end="44873cf1-8f9e-4005-b0b7-96e285fe24d9" end_index="5" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8203b452-e124-48f2-9450-1923194f2942" start_index="0" end="44873cf1-8f9e-4005-b0b7-96e285fe24d9" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ce04da18-77af-4e60-a946-8ef0625f2e83" start_index="0" end="44873cf1-8f9e-4005-b0b7-96e285fe24d9" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7ea398fc-fcb2-4a88-a7f4-e37b203d6db9" start_index="0" end="aa7eb0a2-45d8-4c62-9de4-67b358a9e0aa" end_index="10" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7ea398fc-fcb2-4a88-a7f4-e37b203d6db9" start_index="0" end="44873cf1-8f9e-4005-b0b7-96e285fe24d9" end_index="10" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="25faffe5-d7d6-47d0-88a3-770311263c7e" start_index="0" end="aa7eb0a2-45d8-4c62-9de4-67b358a9e0aa" end_index="11" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="25faffe5-d7d6-47d0-88a3-770311263c7e" start_index="0" end="44873cf1-8f9e-4005-b0b7-96e285fe24d9" end_index="11" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="13456830-79e5-4cb6-9d10-e332bce56e4f" start_index="0" end="7ea398fc-fcb2-4a88-a7f4-e37b203d6db9" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="1ef15fe5-1cbc-4fc4-9298-46f582b15f98" annotationText="Запас задаётся коэффициентом?" left="124.569867556425" top="542.004069438229" width="238" height="162.876010455244" fontSize="14" InitialTop="572.004069438229" InitialHeight="158.550473486178" TextblockHeight="20" backgrouund="#FF48B9FF">
+      <Models ModelGuid="4196b40c-0e96-4ff2-93f4-36671d8ac471" />
+      <Models ModelGuid="9e7d77ac-ef74-4e0b-9b95-1d525a3027d6" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="00a74044-0d41-4bce-bc83-01d41098accd" annotationText="Выберите типы семейств заглушек для стен" left="125.241222657144" top="322.67671360046" width="339" height="210.919071852336" fontSize="14" InitialTop="352.67671360046" InitialHeight="210.919071852336" TextblockHeight="20" backgrouund="#FF48B9FF">
+      <Models ModelGuid="7d12d716-a62c-41b6-ad8e-f53468021aa3" />
+      <Models ModelGuid="c064b48d-5bb0-413d-b823-2b80e7b83cbc" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="643810b4-84d3-4cc4-adca-8b22ddb6a6e5" annotationText="Введите коэффициент запаса, либо запас в мм" left="124.569867556425" top="714.921815904905" width="238" height="222.1828500111" fontSize="14" InitialTop="758.921815904905" InitialHeight="208.182850011097" TextblockHeight="34" backgrouund="#FF48B9FF">
+      <Models ModelGuid="0e00a9cc-f4f2-4583-9476-eed22d0fd8de" />
+      <Models ModelGuid="5cbff9ec-2a49-4120-9546-ee41b83a7531" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="01dbca49-8fb5-45e2-aed0-0578a518a3ca" annotationText="Условия формирования круглого, а не прямоугольного, отверстия" left="124.569867556425" top="949.671130861615" width="296" height="239.221714626405" fontSize="14" InitialTop="993.671130861615" InitialHeight="225.221714626397" TextblockHeight="34" backgrouund="#FF48B9FF">
+      <Models ModelGuid="9496f683-88f5-4533-9788-1cb8226b6675" />
+      <Models ModelGuid="759ee11a-df42-4d2b-9593-a4707ac1fcc8" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="75beb548-e5b2-41b1-95b3-39b676047e0d" annotationText="Работа со связанными файлами" left="88.0439903253042" top="1475.49434242351" width="251.962684096818" height="169.5976896912" fontSize="14" InitialTop="1505.49434242351" InitialHeight="196.810667734312" TextblockHeight="20" backgrouund="#FF48B9FF">
+      <Models ModelGuid="b474b56e-ad74-4285-a3c5-6d85a9e82de8" />
+      <Models ModelGuid="d547b158-3459-4810-983c-959cae9424d9" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="208fb943-99a7-4c5f-9ae4-e70a4ea2497d" annotationText="Выберите типы семейств заглушек для плит" left="321.740292338767" top="2101.28137281113" width="374" height="210.91907185234" fontSize="14" InitialTop="2131.28137281113" InitialHeight="210.919071852336" TextblockHeight="20" backgrouund="#FF48B9FF">
+      <Models ModelGuid="e81a4ffd-bd99-4603-86fd-67fe7bdfe100" />
+      <Models ModelGuid="3505bb29-bd9c-4572-9f10-6ded0b71b8e8" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="96fcaab3-6d3f-4b8e-9957-1190e0b1abed" annotationText="Введите коэффициент запаса, либо запас в мм" left="338.416910051833" top="2531.40198805628" width="238" height="222.1828500111" fontSize="14" InitialTop="2575.40198805628" InitialHeight="208.1828500111" TextblockHeight="34" backgrouund="#FF48B9FF">
+      <Models ModelGuid="4b5fde33-2d02-49cf-a401-98e077f44b00" />
+      <Models ModelGuid="365526a7-dc67-4ec6-aa6f-c5bb54cb567e" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="3042642c-fcbe-497d-9ec2-1ce26fdaa7bb" annotationText="Условия формирования круглого, а не прямоугольного, отверстия" left="338.416910051833" top="2766.15130301299" width="296" height="239.2217146264" fontSize="14" InitialTop="2810.15130301299" InitialHeight="225.2217146264" TextblockHeight="34" backgrouund="#FF48B9FF">
+      <Models ModelGuid="238cd190-421b-463d-a376-7a5e961936f0" />
+      <Models ModelGuid="da234035-c3e0-4b57-9b7e-cbd36b41efea" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="3eea17c9-db15-49f7-873d-9b73de703fd1" annotationText="Запас задаётся коэффициентом?" left="338.416910051833" top="2358.4842415896" width="238" height="162.87601045525" fontSize="14" InitialTop="2388.4842415896" InitialHeight="162.876010455244" TextblockHeight="20" backgrouund="#FF48B9FF">
+      <Models ModelGuid="ce04da18-77af-4e60-a946-8ef0625f2e83" />
+      <Models ModelGuid="8203b452-e124-48f2-9450-1923194f2942" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="9c998827-e348-4286-9b7a-4f159779cffc" annotationText="Комментарий для версионности" left="78.3792909987662" top="1720.41948741054" width="278.345927359342" height="123.62318023112" fontSize="14" InitialTop="1750.41948741054" InitialHeight="123.02781310257" TextblockHeight="20" backgrouund="#FF48B9FF">
+      <Models ModelGuid="7ea398fc-fcb2-4a88-a7f4-e37b203d6db9" />
+      <Models ModelGuid="13456830-79e5-4cb6-9d10-e332bce56e4f" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="60fbbdf2-5ae6-49a7-8bce-f4d063cd3f9d" annotationText="Перезагрузка" left="78.6666771971194" top="1353.32393916915" width="196.226666666667" height="114" fontSize="30" InitialTop="1399.32393916915" InitialHeight="98" TextblockHeight="36" backgrouund="#FFC1D676">
+      <Models ModelGuid="25faffe5-d7d6-47d0-88a3-770311263c7e" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-18957.73046875" eyeY="21704.91796875" eyeZ="-1606.60754394531" lookX="24302.646484375" lookY="-20381.810546875" lookZ="-18187.736328125" upX="0.293428301811218" upY="0.930417597293854" upZ="-0.219597324728966" />
+  </Cameras>
+</Workspace>

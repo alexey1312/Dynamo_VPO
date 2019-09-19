@@ -1,0 +1,58 @@
+<Workspace Version="1.3.4.6666" X="780.58540776573" Y="-34.6231953706935" zoom="0.868497708768585" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <CoreNodeModels.Input.StringInput guid="7c06a0f5-61de-4b30-b0a6-8712a2728224" type="CoreNodeModels.Input.StringInput" nickname="Имя параметра с количеством светильников в помещении" x="-698.178228626681" y="388.088770539791" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>LT_Количество в помещении</System.String>
+      <System.String value="LT_Количество в помещении" />
+    </CoreNodeModels.Input.StringInput>
+    <CoreNodeModels.Input.StringInput guid="e93cc235-809f-4043-86b7-7ad04c77f65b" type="CoreNodeModels.Input.StringInput" nickname="Имя связанного файла с помещениями" x="-560.454760852561" y="268.985080882399" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>07-00-РД-АР-31-СКЮГ7_publication.rvt</System.String>
+      <System.String value="07-00-РД-АР-31-СКЮГ7_publication.rvt" />
+    </CoreNodeModels.Input.StringInput>
+    <CoreNodeModels.Input.StringInput guid="f8678dfa-c358-412a-806c-ffcd73742f3f" type="CoreNodeModels.Input.StringInput" nickname="Имя параметра с высотой установки" x="-544.604509455809" y="455.939010332733" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>LT_Высота установки</System.String>
+      <System.String value="LT_Высота установки" />
+    </CoreNodeModels.Input.StringInput>
+    <DSRevitNodesUI.Levels guid="5a8165bd-417c-4dd0-9d56-9b45394462b3" type="DSRevitNodesUI.Levels" nickname="Уровень" x="-441.102579056332" y="518.468465691524" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="77:Паркинг_План на отм. -3.650" />
+    <CoreNodeModels.Watch guid="e45a4305-cd73-40b3-8fb0-e5d8745f062e" type="CoreNodeModels.Watch" nickname="Watch" x="238.919811334561" y="391.019847247087" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="3095178a-ded5-42c1-9a38-276553a6a412" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Set Installation Height and Quantity in Room (from link) to LF" x="-198.270803827857" y="386.372400612622" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <ID value="6b5e444b-ee4b-476d-bfb2-0247bfc05746" />
+      <Name value="Set Installation Height and Quantity in Room (from link) to LF" />
+      <Description value="Данный узел записывает в свойства светильников высоту установки и количество светильников в помещении для маркировки согласно ГОСТ 21.608-2014" />
+      <Inputs>
+        <Input value="revitLinkName" />
+        <Input value="quantityParameterName" />
+        <Input value="heigthParameterName" />
+        <Input value="referenceLevel" />
+        <Input value="refresh" />
+      </Inputs>
+      <Outputs>
+        <Output value="elements" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <CoreNodeModels.Input.BoolSelector guid="c2673156-6bfc-4bc7-a7f6-3c40c32922d8" type="CoreNodeModels.Input.BoolSelector" nickname="Обновить" x="-413.106228825936" y="610.701135500758" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>True</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="7c06a0f5-61de-4b30-b0a6-8712a2728224" start_index="0" end="3095178a-ded5-42c1-9a38-276553a6a412" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e93cc235-809f-4043-86b7-7ad04c77f65b" start_index="0" end="3095178a-ded5-42c1-9a38-276553a6a412" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f8678dfa-c358-412a-806c-ffcd73742f3f" start_index="0" end="3095178a-ded5-42c1-9a38-276553a6a412" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5a8165bd-417c-4dd0-9d56-9b45394462b3" start_index="0" end="3095178a-ded5-42c1-9a38-276553a6a412" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3095178a-ded5-42c1-9a38-276553a6a412" start_index="0" end="e45a4305-cd73-40b3-8fb0-e5d8745f062e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c2673156-6bfc-4bc7-a7f6-3c40c32922d8" start_index="0" end="3095178a-ded5-42c1-9a38-276553a6a412" end_index="4" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>
